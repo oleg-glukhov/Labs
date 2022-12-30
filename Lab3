@@ -1,0 +1,26 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+int main()
+{
+    srand(time(nullptr));
+ int arr[10];
+ int temp = 0;
+ cout << "Old array: ";
+ for (int i=0; i<10; i++)
+ {
+  arr[i] = rand()%100;
+  cout << arr[i] << ' ';
+ }
+ cout << endl << "New array: ";
+ for (int i=0; i<10/2; i++)
+ {
+     temp = arr[i];
+     arr[i] = arr[9-i];
+     arr[9-i] = temp;
+ }
+ for (int i=0; i<10; i++)
+ cout << arr[i] << ' ';
+}
