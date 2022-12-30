@@ -1,0 +1,70 @@
+#include <iostream>
+#include <cmath>
+
+int main ()
+{
+ //ex1
+ double b=0;
+ double v1=0;
+ double v2=0;
+ double vtrue=0;
+ double ang=0;
+ double sinang=0;
+ double t=0;
+
+ std::cout << "Enter V1: ";
+ std::cin >> v1;
+ std::cout << "Enter V2: ";
+ std::cin >> v2;
+ sinang = v2/v1;
+ if ((sinang < -1)||(sinang > 1))
+ {
+  std::cout << "It's impossible to meet task requirements with your values." << std::endl;
+ }
+ else
+ {
+  std::cout << "Enter b: ";
+  std::cin >> b;
+  ang = asin(sinang);
+  std::cout << "Angle: " << ang << std::endl;
+  vtrue = cos(ang)*v1;
+  t = b/vtrue;
+  std::cout << "Time: " << t << std::endl;
+ 
+  t = (b/2)/vtrue;
+  std::cout << "Enter V3: ";
+  std::cin >> v1;
+  sinang = v2/v1;
+  if ((sinang < -1)||(sinang > 1))
+  {
+   std::cout << "It's impossible to meet task requirements with your values." << std::endl;
+  }
+  else
+  {
+   ang = asin(sinang);
+   std::cout << "New angle: " << ang << std::endl;
+   vtrue = cos(ang)*v1;
+   t = t+((b/2)/vtrue);
+   std::cout << "New time: " << t << std::endl;
+  }
+ }
+
+
+ //ex2
+ int h=0;
+ int w=0;
+ std::cout << "Enter your height: ";
+ std::cin >> h;
+ std::cout << "Enter your weight: ";
+ std::cin >> w;
+ if (w > h-100)
+ {
+  std::cout << "It'll be better for you to drop some weight." << std::endl;
+ }
+ else
+ {
+  std::cout << "Your weight is normal." << std::endl;
+ }
+ 
+
+}
