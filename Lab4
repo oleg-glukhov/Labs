@@ -1,0 +1,97 @@
+#include <iostream>
+#include <string>
+#include <limits>
+#include <map>
+using namespace std;
+
+int numdis = 0;
+int numgroup = 0;
+int numstud = 0;
+
+struct Discipline
+{
+    string name;
+    int mark;
+};
+
+struct Student
+{
+    string fio;
+    int group;
+    Discipline* results;
+};
+
+int main()
+{
+    cout << "Enter number of disciplines: ";
+    cin >> numdis;
+    cout << "Enter number of groups: ";
+    cin >> numgroup;
+    cout << "Enter number of students in each group: ";
+    cin >> numstud;
+
+    Student** stud = new Student*[numgroup];
+    for (int i=0; i<numgroup; i++)
+    {
+        stud[i] = new Student[numstud];
+    }
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    for (int i=0; i<numgroup; i++)
+        for (int j=0; j<numstud; j++)
+        {
+            stud[i][j].group = i+1;
+            cout << "Enter " << stud[i][j].group << " group " << j+1 << " student name: ";
+            getline(cin,stud[i][j].fio);
+            stud[i][j].results = new Discipline[numdis];
+            for (int k=0; k<numdis; k++)
+            {
+                cout << "Enter " << stud[i][j].fio << " " << k+1 << " discipline name: ";
+                getline(cin, stud[i][j].results[k].name);
+                cout << "Enter " << stud[i][j].fio << " " << stud[i][j].results[k].name << " mark: ";
+                cin >> stud[i][j].results[k].mark;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+        }
+    cout << endl;
+    for (int i=0; i<numgroup; i++)
+    {
+        cout << "List of " << i+1 << " group students with their marks on different disciplines:" << endl;
+        for (int j = 0; j < numstud; j++)
+        {
+            cout << j+1 << ") " << stud[i][j].fio << ": ";
+            for (int k = 0; k < numdis; k++)
+            {
+                cout << stud[i][j].results[k].name << " - " << stud[i][j].results[k].mark << "; ";
+            }
+            cout << endl;
+        }
+    }
+
+    map <int, int> mp;
+    mp[5] = 1;
+    int sum = 0;
+    for (int i=0; i<numgroup; i++)
+    {
+        for (int j = 0; j < numstud; j++)
+        {
+            for (int k = 0; k < numdis; k++)
+            {
+                sum = sum + mp[stud[i][j].results[k].mark];
+            }
+        }
+    }
+    cout << endl;
+    cout << "Number of excellent marks: " << sum;
+
+    for (int i=0; i<numgroup; i++)
+        for (int j=0; j<numstud; j++)
+            delete [] stud[i][j].results;
+    for (int i=0; i<numgroup; i++)
+        delete [] stud[i];
+    delete [] stud;
+    
+
+
+
+    return 0;
+}
