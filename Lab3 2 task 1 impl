@@ -1,0 +1,35 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <vector>
+using namespace std;
+
+int main()
+{
+    srand(time(nullptr));
+ int wid = 0;
+ int hei = 0;
+ int sum = 0;
+ cout << "Enter array width: ";
+ cin >> wid;
+ cout << "Enter array height: ";
+ cin >> hei;
+ vector <vector<int>> arr(wid, vector<int>(hei));
+ for (int n = 0; n < wid; n++)
+     for (int m = 0; m < hei; m++)
+     arr[n] [m] = rand()%100;
+ for (int m=0; m < hei; m++)
+ {
+        for (int n = 0; n < wid; n++)
+         cout << arr[n] [m] << ' ';
+        cout << endl;
+ }
+ cout << "Sums: ";
+ for (int m=0; m < hei; m++)
+ {
+     for (int n = 0; n < wid; n++)
+         sum = sum + arr[n] [m];
+     cout << sum << ' ';
+     sum = 0;
+ }
+}
