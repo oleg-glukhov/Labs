@@ -1,6 +1,6 @@
 #include <iostream>
 
-using namespace std;
+using std::cin, std::cout;
 
 bool check(int m) {
     if (m % 2 != 1)
