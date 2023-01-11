@@ -1,0 +1,37 @@
+#include <iostream>
+
+using namespace std;
+
+bool check(int m) {
+    if (m % 2 != 1)
+        return check(m / 2);
+    else {
+        if (m == 1)
+            return true;
+        else
+            return false;
+    }
+}
+
+int main() {
+    int n = 0;
+    cout << "Enter N value: ";
+    cin >> n;
+    if (n == 0) {
+        cout << "NO" << '\n';
+        return 0;
+    }
+    cout << "First implementation: ";
+    if (check(n))
+        cout << "YES" << '\n';
+    else
+        cout << "NO" << '\n';
+    cout << "Second implementation: ";
+    while (n % 2 != 1)
+        n /= 2;
+    if (n == 1)
+        cout << "YES" << '\n';
+    else
+        cout << "NO" << '\n';
+    return 0;
+}
