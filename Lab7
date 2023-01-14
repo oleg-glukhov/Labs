@@ -1,0 +1,165 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <utility>
+#include <vector>
+#include <limits>
+using namespace std;
+
+
+struct Employee {
+    Employee(string a, string b, string c, long long d, Employee* e, Employee* f) :
+    fio(std::move(a)), employ_date(std::move(b)), post (std::move(c)), base_wage(d), prev(e), next(f) {}
+    string fio;
+    string employ_date;
+    string post;
+    long long base_wage;
+
+    Employee* prev;
+    Employee* next;
+};
+
+
+vector<Employee> chain;
+Employee* first;
+Employee* last;
+int n = 0;
+string path;
+Employee* current;
+Employee* notch;
+int j = 0;
+
+
+int read_txt() {
+    ifstream in(path);
+    if (in.is_open()) {
+        string fio;
+        string employ_date;
+        string post;
+        long long base_wage;
+        string line;
+        int k = 0;
+        while (getline(in, line)) {
+            switch (k % 4) {
+                case 0: {
+                    fio = line;
+                    break;
+                }
+                case 1: {
+                    employ_date = line;
+                    break;
+                }
+                case 2: {
+                    post = line;
+                    break;
+                }
+                case 3: {
+                    base_wage = stoll(line);
+                    chain.emplace_back(fio, employ_date, post, base_wage, nullptr, nullptr);
+                    ++n;
+                    break;
+                }
+            }
+            ++k;
+        }
+
+        first = last = &chain[0];
+        for (int i = 1; i < n; ++i) {
+            chain[i].prev = &chain[i - 1];
+            chain[i - 1].next = &chain[i];
+            last = &chain[i];
+        }
+
+        if (n > 0) {
+            cout << "\n|Original list|\n"
+                   << "V             V\n";
+            for (int i = 0; i < n; ++i) {
+                cout << "\nEmployee #" << i + 1 << ":\n"
+                     << "FIO: " << chain[i].fio << '\n'
+                     << "Employ date: " << chain[i].employ_date << '\n'
+                     << "Post: " << chain[i].post << '\n'
+                     << "Base wage: " << chain[i].base_wage << '\n';
+            }
+        }
+        else
+            cout << "Found no employees";
+
+        if (in.bad()) {
+            in.close();
+            return 4;
+        }
+        else {
+            if (!in.eof()) {
+                in.close();
+                return 3;
+            } else {
+                in.close();
+                return 2;
+            }
+        }
+    }
+    else
+        return 1;
+}
+
+
+int sort() {
+
+    current = notch;
+    notch = current->next;
+
+    while ((current->prev != nullptr) && (current->base_wage < current->prev->base_wage)) {
+        if (first == current->prev)
+            first = current;
+        if (last == current)
+            last = current->prev;
+        current->prev->next = current->next;
+        current->next = current->prev;
+        current->prev = current->next->prev;
+        current->next->prev = current;
+    }
+    if (notch != nullptr)
+        sort();
+
+    return 0;
+}
+
+
+int show() {
+    cout << "\nEmployee #" << j + 1 << ":\n"
+         << "FIO: " << current->fio << '\n'
+         << "Employ date: " << current->employ_date << '\n'
+         << "Post: " << current->post << '\n'
+         << "Base wage: " << current->base_wage << '\n';
+    if (current->next != nullptr) {
+        current = current->next;
+        ++j;
+        show();
+    }
+    return 0;
+}
+
+
+int main(int argc, char* argv[]) {
+
+    path = argv[1];
+
+    read_txt();
+
+    if (n > 1) {
+        notch = first->next;
+        sort();
+    }
+
+    if (n > 0) {
+        cout << "\n\n|Sorted list|\n"
+                 << "V           V\n";
+        current = first;
+        show();
+    }
+
+
+
+
+    return 0;
+}
