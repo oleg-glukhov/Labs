@@ -3,13 +3,14 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <limits>
 using namespace std;
+
 
 
 struct Employee {
     Employee(string a, string b, string c, long long d, Employee* e, Employee* f) :
     fio(std::move(a)), employ_date(std::move(b)), post (std::move(c)), base_wage(d), prev(e), next(f) {}
+
     string fio;
     string employ_date;
     string post;
@@ -18,6 +19,7 @@ struct Employee {
     Employee* prev;
     Employee* next;
 };
+
 
 
 vector<Employee> chain;
@@ -30,13 +32,18 @@ Employee* notch;
 int j = 0;
 
 
+
 int read_txt() {
+
     ifstream in(path);
+
     if (in.is_open()) {
+
         string fio;
         string employ_date;
         string post;
         long long base_wage;
+
         string line;
         int k = 0;
         while (getline(in, line)) {
@@ -66,8 +73,7 @@ int read_txt() {
         first = last = &chain[0];
         for (int i = 1; i < n; ++i) {
             chain[i].prev = &chain[i - 1];
-            chain[i - 1].next = &chain[i];
-            last = &chain[i];
+            chain[i - 1].next = last = &chain[i];
         }
 
         if (n > 0) {
@@ -92,7 +98,8 @@ int read_txt() {
             if (!in.eof()) {
                 in.close();
                 return 3;
-            } else {
+            }
+            else {
                 in.close();
                 return 2;
             }
@@ -101,6 +108,7 @@ int read_txt() {
     else
         return 1;
 }
+
 
 
 int sort() {
@@ -117,7 +125,12 @@ int sort() {
         current->next = current->prev;
         current->prev = current->next->prev;
         current->next->prev = current;
+        if (current->prev != nullptr)
+            current->prev->next = current;
+        if (current->next->next != nullptr)
+            current->next->next->prev = current->next;
     }
+
     if (notch != nullptr)
         sort();
 
@@ -125,19 +138,24 @@ int sort() {
 }
 
 
+
 int show() {
+
     cout << "\nEmployee #" << j + 1 << ":\n"
          << "FIO: " << current->fio << '\n'
          << "Employ date: " << current->employ_date << '\n'
          << "Post: " << current->post << '\n'
          << "Base wage: " << current->base_wage << '\n';
+
     if (current->next != nullptr) {
         current = current->next;
         ++j;
         show();
     }
+
     return 0;
 }
+
 
 
 int main(int argc, char* argv[]) {
@@ -157,9 +175,6 @@ int main(int argc, char* argv[]) {
         current = first;
         show();
     }
-
-
-
 
     return 0;
 }
