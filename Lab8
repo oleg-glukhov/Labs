@@ -1,0 +1,147 @@
+#include <iostream>
+#include <utility>
+#include <vector>
+#include <deque>
+#include <ctime>
+#include <fstream>
+#include "profile.h"
+using namespace std;
+
+
+struct Student {
+    Student() {
+        color = ' ';
+        iq = 0;
+    }
+
+    string color;
+    int iq;
+};
+
+
+int read_txt(const string &path, vector<Student> &students, long long &n) {
+    ifstream in(path);
+    if (in.is_open()) {
+        n = 0;
+        in >> n;
+        students.resize(n);
+        in.ignore(1,'\n');
+        for (auto &current: students) {
+            getline(in, current.color);
+            in >> current.iq;
+            in.ignore(1,'\n');
+        }
+        for (int i = 0; i < n; ++i) {
+            cout << "\nStudent #" << i + 1 << ":\n"
+                 << "Color: " << students[i].color << '\n'
+                 << "Iq: " << students[i].iq << '\n';
+        }
+        if (in.bad()) {
+            in.close();
+            return 4;
+        }
+        else {
+            if (!in.eof()) {
+                in.close();
+                return 3;
+            } else {
+                in.close();
+                return 2;
+            }
+        }
+    }
+    else
+        return 1;
+}
+
+
+int main(int argc, char* argv[]) {
+
+    //First part
+    vector<int> vec;
+    deque<int> deq;
+    long long n = 100000;
+    unsigned long long seed = time(nullptr);
+
+
+    srand(seed);
+    {
+        LogDuration duration("Vector add elements by one from start");
+        for (long long i = 0; i < n; ++i) {
+            vec.insert(vec.begin(), rand());
+        }
+    }
+
+    srand(seed);
+    {
+        LogDuration duration("Deque add elements by one from start");
+        for (long long i = 0; i < n; ++i) {
+            deq.push_front(rand());
+        }
+    }
+
+
+    srand(seed);
+    {
+        LogDuration duration("Vector find all elements");
+        for (long long i = 0; i < n; ++i) {
+            find(vec.begin(), vec.end(), rand());
+        }
+    }
+
+    srand(seed);
+    {
+        LogDuration duration("Deque find all elements");
+        for (long long i = 0; i < n; ++i) {
+            find(deq.begin(), deq.end(), rand());
+        }
+    }
+
+
+    {
+        LogDuration duration("Vector delete all elements by one from end");
+        for (long long i = 0; i < n; ++i) {
+            vec.pop_back();
+        }
+    }
+
+    {
+        LogDuration duration("Deque delete all elements by one from end");
+        for (long long i = 0; i < n; ++i) {
+            deq.pop_back();
+        }
+    }
+
+
+
+
+    //Second part
+    string path = argv[1];
+    vector<Student> students;
+
+    int error = read_txt(path, students, n);
+
+    switch (error) {
+        case 1: {
+            cout << "\n*Unable to open file*" << '\n';
+            break;
+        }
+        case 2: {
+            cout << "\n*End of file*" << '\n';
+            break;
+        }
+        case 3: {
+            cout << "\n*Format error*" << '\n';
+            break;
+        }
+        case 4: {
+            cout << "\n*I/O error*" << '\n';
+            break;
+        }
+    }
+
+
+
+
+    return 0;
+}
