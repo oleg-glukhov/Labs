@@ -3,35 +3,45 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <limits>
 using namespace std;
 
+
 struct Employee {
-    Employee(string a, string b, string c, unsigned int d) : fio(std::move(a)), employ_date(std::move(b)),
+    Employee(string a, string b, string c, long long d) : fio(std::move(a)), employ_date(std::move(b)),
                                                              post (std::move(c)), base_wage(d) {}
+    Employee() {
+        fio = ' ';
+        employ_date = ' ';
+        post = ' ';
+        base_wage = 0;
+    }
     string fio;
     string employ_date;
     string post;
-    unsigned int base_wage;
+    long long base_wage;
 };
 
-unsigned short mode;
-unsigned short appearance;
-string input;
-unsigned int n = 0;
+
+string mode;
+string appearance;
+string path;
+int n = 0;
 vector<Employee> employees;
 int error = 0;
 
+
 int write_txt() {
-    ofstream out(input, ios::app);
+    ofstream out(path, ios::app);
     if (out.is_open()) {
         cout << "Enter number of employees: ";
         cin >> n;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        for (unsigned int i = 0; i < n; ++i) {
+        for (int i = 0; i < n; ++i) {
             string fio;
             string employ_date;
             string post;
-            unsigned int base_wage;
+            long long base_wage;
             cout << "Enter FIO for employee #" << i + 1 << ": ";
             getline(cin, fio);
             cout << "Enter employ date for employee #" << i + 1 << ": ";
@@ -45,33 +55,23 @@ int write_txt() {
             out << employees[i].fio << '\n' << employees[i].employ_date << '\n' << employees[i].post << '\n'
                 << employees[i].base_wage << '\n';
         }
-        if (out.bad()) {
-            out.close();
-            return 4;
-        }
-        else {
-            if (!out.eof()) {
-                out.close();
-                return 3;
-            } else {
-                out.close();
-                return 2;
-            }
-        }
+
+        return 0;
     }
     else
         return 1;
 }
 
+
 int read_txt() {
-    ifstream in(input);
+    ifstream in(path);
     if (in.is_open()) {
         string fio;
         string employ_date;
         string post;
-        unsigned int base_wage;
+        long long base_wage;
         string line;
-        unsigned short k = 0;
+        int k = 0;
         while (getline(in, line)) {
             switch (k % 4) {
                 case 0: {
@@ -95,7 +95,7 @@ int read_txt() {
             }
             ++k;
         }
-        for (unsigned int i = 0; i < n; ++i) {
+        for (int i = 0; i < n; ++i) {
             cout << "\nEmployee #" << i + 1 << ":\n"
                  << "FIO: " << employees[i].fio << '\n'
                  << "Employ date: " << employees[i].employ_date << '\n'
@@ -120,17 +120,19 @@ int read_txt() {
         return 1;
 }
 
+
 int write_bin() {
-    ofstream out(input, ios::app | ios::binary);
+    ofstream out(path, ios::app | ios::binary);
     if (out.is_open()) {
         cout << "Enter number of employees: ";
         cin >> n;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        for (unsigned int i = 0; i < n; ++i) {
+
+        for (int i = 0; i < n; ++i) {
             string fio;
             string employ_date;
             string post;
-            unsigned int base_wage;
+            long long base_wage;
             cout << "Enter FIO for employee #" << i + 1 << ": ";
             getline(cin, fio);
             cout << "Enter employ date for employee #" << i + 1 << ": ";
@@ -141,43 +143,48 @@ int write_bin() {
             cin >> base_wage;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             employees.emplace_back(fio, employ_date, post, base_wage);
-            out.write((char*) &employees[i], sizeof(Employee));
         }
-        if (out.bad()) {
-            out.close();
-            return 4;
+
+        out.write((char *) &n, sizeof(n));
+        for (auto iterator: employees) {
+            out << iterator.fio << ends << iterator.employ_date << ends << iterator.post << ends;
+            out.write((char *) &iterator.base_wage, sizeof(iterator.base_wage));
         }
-        else {
-            if (!out.eof()) {
-                out.close();
-                return 3;
-            } else {
-                out.close();
-                return 2;
-            }
-        }
+
+        return 0;
     }
     else
         return 1;
 }
 
+
 int read_bin() {
-    ifstream in(input, ios::binary);
+    ifstream in(path, ios::binary);
     if (in.is_open()) {
-        cout << "Enter number of employees: ";
-        cin >> n;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        for (unsigned int i = 0; i < n; ++i) {
-            employees.emplace_back("", "", "", 0);
-            in.read((char*) &employees[i], sizeof(Employee));
+        string fio;
+        string employ_date;
+        string post;
+        long long base_wage;
+
+        in.read((char *) &n, sizeof(n));
+        employees.resize(n);
+
+        for (auto &iterator: employees) {
+
+            getline(in, iterator.fio, '\0');
+            getline(in, iterator.employ_date, '\0');
+            getline(in, iterator.post, '\0');
+            in.read((char *) &iterator.base_wage, sizeof(iterator.base_wage));
         }
-        for (unsigned int i = 0; i < n; ++i) {
+
+        for (int i = 0; i < n; ++i) {
             cout << "\nEmployee #" << i + 1 << ":\n"
                  << "FIO: " << employees[i].fio << '\n'
                  << "Employ date: " << employees[i].employ_date << '\n'
                  << "Post: " << employees[i].post << '\n'
                  << "Base wage: " << employees[i].base_wage << '\n';
         }
+        cout << (char)in.get();
         if (in.bad()) {
             in.close();
             return 4;
@@ -196,8 +203,9 @@ int read_bin() {
         return 1;
 }
 
+
 int clear() {
-    ofstream out(input);
+    ofstream out(path);
     if (out.is_open()) {
         out.close();
         return 0;
@@ -206,167 +214,41 @@ int clear() {
         return 1;
 }
 
-int main() {
-    cout << R"(Enter 3 arguments divided by space (#1 - "write" or "read" or "clear"; #2 - "text" or "binary"; #3 - an absolute path to the file): )";
-    getline(cin, input);
-    {
-        string::iterator it = input.begin();
-        while (it != input.end()) {
-            if (*it == ' ')
-                it = input.erase(it);
-            else
-                ++it;
-        }
-    }
-    unsigned short flag = 1;
-    {
-        string::size_type temp;
 
-        if ((temp = input.find("write")) != string::npos) {
-            mode = 0;
-            flag *= 2;
-            input.erase(temp, 5);
-        }
-        if ((temp = input.find("read")) != string::npos) {
-            mode = 1;
-            flag *= 3;
-            input.erase(temp, 4);
-        }
-        if ((temp = input.find("text")) != string::npos) {
-            appearance = 0;
-            flag *= 5;
-            input.erase(temp, 4);
-        }
-        if ((temp = input.find("binary")) != string::npos) {
-            appearance = 1;
-            flag *= 7;
-            input.erase(temp, 6);
-        }
-        if ((temp = input.find("clear")) != string::npos) {
-            mode = 2;
-            flag *= 11;
-            input.erase(temp, 5);
-        }
-    }
+int main(int argc, char* argv[]) {
 
-    switch (flag) {
-        case 1: {
-            char ans = 'n';
-            cout << R"(Are you sure that all you have entered is a path to the file? (y/n) )";
-            cin >> ans;
-            if (ans != 'y') {
-                cout << "Then you could try again";
-                return 0;
-            }
-            break;
-        }
-        case 2: {
-            char ans = 'n';
-            cout << R"(Are you sure that all you have entered except "write" is a path to the file? (y/n) )";
-            cin >> ans;
-            if (ans != 'y') {
-                cout << "Then you could try again";
-                return 0;
-            }
-            break;
-        }
-        case 3: {
-            char ans = 'n';
-            cout << R"(Are you sure that all you have entered except "read" is a path to the file? (y/n) )";
-            cin >> ans;
-            if (ans != 'y') {
-                cout << "Then you could try again";
-                return 0;
-            }
-            break;
-        }
-        case 5: {
-            char ans = 'n';
-            cout << R"(Are you sure that all you have entered except "text" is a path to the file? (y/n) )";
-            cin >> ans;
-            if (ans != 'y') {
-                cout << "Then you could try again";
-                return 0;
-            }
-            break;
-        }
-        case 7: {
-            char ans = 'n';
-            cout << R"(Are you sure that all you have entered except "binary" is a path to the file? (y/n) )";
-            cin >> ans;
-            if (ans != 'y') {
-                cout << "Then you could try again";
-                return 0;
-            }
-            break;
-        }
-        case 6: {
-            char ans = 'n';
-            cout << R"(You have entered 2 arguments for the same option, "read" will be used)" << '\n'
-                 << R"(Are you sure that all you have entered except "write" and "read" is a path to the file? (y/n) )";
-            cin >> ans;
-            if (ans != 'y') {
-                cout << "Then you could try again";
-                return 0;
-            }
-            break;
-        }
-        case 35: {
-            char ans = 'n';
-            cout << R"(You have entered 2 arguments for the same option, "binary" will be used)" << '\n'
-                 << R"(Are you sure that all you have entered except "text" and "binary" is a path to the file? (y/n) )";
-            cin >> ans;
-            if (ans != 'y') {
-                cout << "Then you could try again";
-                return 0;
-            }
-            break;
-        }
-        case 30: {
-            cout << R"(You have entered 2 arguments for the same option, "read" will be used)";
-            break;
-        }
-        case 42: {
-            cout << R"(You have entered 2 arguments for the same option, "read" will be used)";
-            break;
-        }
-        case 70: {
-            cout << R"(You have entered 2 arguments for the same option, "binary" will be used)";
-            break;
-        }
-        case 105: {
-            cout << R"(You have entered 2 arguments for the same option, "binary" will be used)";
-            break;
-        }
-    }
+    mode = argv[1];
+    appearance = argv[2];
+    path = argv[3];
 
-    if (mode == 0 && appearance == 0)
+    if ((mode.find("write") != string::npos) && (appearance.find("text") != string::npos))
         error = write_txt();
-    if (mode == 1 && appearance == 0)
+    if ((mode.find("read") != string::npos) && (appearance.find("text") != string::npos))
         error = read_txt();
-    if (mode == 0 && appearance == 1)
+    if ((mode.find("write") != string::npos) && (appearance.find("binary") != string::npos))
         error = write_bin();
-    if (mode == 1 && appearance == 1)
+    if ((mode.find("read") != string::npos) && (appearance.find("binary") != string::npos))
         error = read_bin();
-    if (mode == 2)
+    if (mode.find("clear") != string::npos)
         error = clear();
+
     switch (error) {
         case 0:
             return 0;
         case 1: {
-            cout << "*Unable to open file*" << '\n';
+            cout << "\n*Unable to open file*" << '\n';
             return 1;
         }
         case 2: {
-            cout << "*End of file or format error*" << '\n';
+            cout << "\n*End of file*" << '\n';
             return 2;
         }
         case 3: {
-            cout << "*Format error*" << '\n';
+            cout << "\n*Format error*" << '\n';
             return 3;
         }
         case 4: {
-            cout << "*I/O error*" << '\n';
+            cout << "\n*I/O error*" << '\n';
             return 4;
         }
     }
