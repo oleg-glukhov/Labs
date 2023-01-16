@@ -1,0 +1,6 @@
+#ifndef LAB5_CHECK_H
+#define LAB5_CHECK_H
+
+#endif //LAB5_CHECK_H
+
+bool check(int);
