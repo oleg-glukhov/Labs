@@ -1,0 +1,108 @@
+#include <iostream>
+#include <vector>
+#include <deque>
+#include <fstream>
+#include <string>
+using namespace std;
+
+
+struct Student {
+    Student() {
+        name = ' ';
+        iq = 0;
+    }
+
+    string name;
+    int iq;
+};
+
+
+int n = 0;
+string path;
+vector<Student> students;
+
+
+int read_txt() {
+    ifstream in(path);
+    if (in.is_open()) {
+        n = 0;
+        in >> n;
+        students.resize(n);
+        in.ignore(1,'\n');
+        for (auto &current: students) {
+            getline(in, current.name);
+            in >> current.iq;
+            in.ignore(1,'\n');
+        }
+
+        cout << "\n|Original list|\n"
+               << "V             V\n";
+
+        for (int i = 0; i < n; ++i) {
+            cout << "\nStudent #" << i + 1 << ":\n"
+                 << "Name: " << students[i].name << '\n'
+                 << "Iq: " << students[i].iq << '\n';
+        }
+        if (in.bad()) {
+            in.close();
+            return 4;
+        }
+        else {
+            if (!in.eof()) {
+                in.close();
+                return 3;
+            } else {
+                in.close();
+                return 2;
+            }
+        }
+    }
+    else
+        return 1;
+}
+
+
+bool ForSortInt(const Student &ob1, const Student &ob2) {
+    return ob1.iq < ob2.iq;
+}
+
+
+int main(int argc, char* argv[]) {
+
+    path = argv[1];
+
+    int error = read_txt();
+
+    switch (error) {
+        case 1: {
+            cout << "\n*Unable to open file*" << '\n';
+            return 1;
+        }
+        case 2: {
+            cout << "\n*End of file*" << '\n';
+            break;
+        }
+        case 3: {
+            cout << "\n*Format error*" << '\n';
+            return 3;
+        }
+        case 4: {
+            cout << "\n*I/O error*" << '\n';
+            return 4;
+        }
+    }
+
+    sort(students.begin(), students.end(), ForSortInt);
+
+    cout << "\n\n|Sorted list|\n"
+             << "V           V\n";
+
+    for (int i = 0; i < n; ++i) {
+        cout << "\nStudent #" << i + 1 << ":\n"
+             << "Name: " << students[i].name << '\n'
+             << "Iq: " << students[i].iq << '\n';
+    }
+
+
+    return 0;
+}
