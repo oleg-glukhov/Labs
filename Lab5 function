@@ -1,0 +1,13 @@
+#include "check.h"
+
+
+bool check(int m) {
+    if (m % 2 != 1)
+        return check(m / 2);
+    else {
+        if (m == 1)
+            return true;
+        else
+            return false;
+    }
+}
