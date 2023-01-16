@@ -1,0 +1,66 @@
+#include <vector>
+#include <deque>
+#include <ctime>
+#include "profile.h"
+using namespace std;
+
+
+int main() {
+
+    vector<int> vec;
+    deque<int> deq;
+    long long n = 400000;
+    unsigned long long seed = time(nullptr);
+
+
+    srand(seed);
+    {
+        LogDuration duration("Vector: add elements by one from start");
+        for (long long i = 0; i < n; ++i) {
+            vec.insert(vec.begin(), rand());
+        }
+    }
+
+    srand(seed);
+    {
+        LogDuration duration("Deque: add elements by one from start");
+        for (long long i = 0; i < n; ++i) {
+            deq.push_front(rand());
+        }
+    }
+
+
+    srand(seed);
+    {
+        LogDuration duration("Vector: find all elements");
+        for (long long i = 0; i < n; ++i) {
+            find(vec.begin(), vec.end(), rand());
+        }
+    }
+
+    srand(seed);
+    {
+        LogDuration duration("Deque: find all elements");
+        for (long long i = 0; i < n; ++i) {
+            find(deq.begin(), deq.end(), rand());
+        }
+    }
+
+
+    {
+        LogDuration duration("Vector: delete all elements by one from end");
+        for (long long i = 0; i < n; ++i) {
+            vec.pop_back();
+        }
+    }
+
+    {
+        LogDuration duration("Deque: delete all elements by one from end");
+        for (long long i = 0; i < n; ++i) {
+            deq.pop_back();
+        }
+    }
+
+
+    return 0;
+}
